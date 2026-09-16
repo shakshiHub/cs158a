@@ -6,10 +6,14 @@ import uuid
 import json
 
 
+# logging purposes
 config_file = sys.argv[1]
+log_filename = config_file.replace("config", "log")
+log_file = open(log_filename, "w")
+
+
 connections = {}
-my_uuid = uuid.uuid4()
-leader_id = None
+leader_uuid = None
 done = False
 buffer = ''
 
@@ -17,6 +21,25 @@ class Message:
     def __init__(self, uuid, flag):
         self.uuid = uuid
         self.flag = flag
+
+def log(line):
+    log_file.write(line + "\n")
+    log_file.flush()
+
+def compare_uuid(client_uuid):
+    if client_uuid > my_uuid:
+        return "greater"
+    elif client_uuid < my_uuid:
+        return "less"
+    else:
+        return "same"
+
+def state():
+    if leader_uuid is None:
+        return "0"
+    else:
+        return f"1, leader_uuid={leader_uuid}"
+ 
 
 # function to parse the config file (passed as command line argument)
 def parse(config_file):
@@ -40,7 +63,6 @@ def start_server(listen_addr, listen_port):
         server_sock.bind((listen_addr, listen_port))
         server_sock.listen(1)
         conn, addr = server_sock.accept() # conn = the socket the server uses to recieve data from client. addr = ip, port on client side.
-        print("Server accepted connection")
         connections["conn"] = conn # save conn in dict
 
 
@@ -48,7 +70,6 @@ def start_server(listen_addr, listen_port):
 def start_client(connect_addr, connect_port):
     client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_sock.connect((connect_addr, connect_port))
-    print("Client connected")
     return client_sock
 
 # function to send message to server as a client
@@ -56,7 +77,7 @@ def send_message(sock, msg):
     msg_dict = {"uuid": str(msg.uuid), "flag": msg.flag} # convert message object to dict
     json_str = json.dumps(msg_dict) # convert dict to json. json_str will be smth like: {"uuid": "1234", "flag": 0}
     sock.sendall(json_str.encode()) # convert json string to bytes and send through socket
-    print("Sent initial message")
+    log(f"Sent: uuid={msg.uuid}, flag={msg.flag}")
 
 # function to recieve message as a server from client
 def receive_message(conn, buffer):
@@ -76,6 +97,8 @@ def receive_message(conn, buffer):
  
     return client_uuid, client_flag, buffer
 
+my_uuid = uuid.uuid4()
+log(f"UUID: {my_uuid}")
 
 listen_addr, listen_port, connect_addr, connect_port = parse(config_file)
 
@@ -85,8 +108,7 @@ server_thread.start()
 
 # main thread
 # as start_server thread works in the background, do work
-time.sleep(5)
-
+time.sleep(10)
 client_sock = start_client(connect_addr, connect_port)
     
 # sending inital messsage
@@ -101,23 +123,19 @@ while not done:
     client_uuid, client_flag, buffer = receive_message(conn, buffer)
  
     if client_uuid is None:
-        print("Connection closed by client")
         break
- 
-    print(f"Received uuid={client_uuid}, flag={client_flag}")
- 
+     
+    log(f"Received: uuid={client_uuid}, flag={client_flag}, {compare_uuid(client_uuid)}, {state()}")
+
     # client flag = 1, leader is decided
     if client_flag == 1:
-        leader_id = client_uuid
-        print(f"Leader is decided to {leader_id}")
+        leader_uuid = client_uuid
+        log(f"Leader is decided to {leader_uuid}.")
  
         # if leader is not own uuid, send client uuid forward
         if client_uuid != my_uuid:
             send_message(client_sock, Message(client_uuid, 1))
         # if leader is own uuid, stop sending
-        else:
-            print("Leader announcement completed full loop.")
- 
         done = True
  
     # send client uuid forward
@@ -126,13 +144,14 @@ while not done:
  
     # ignore
     elif client_uuid < my_uuid:
-        print(f"Ignored uuid={client_uuid}, flag=0")
+        log(f"Ignored: uuid={client_uuid}, flag={client_flag}, {compare_uuid(client_uuid)}, {state()}")
  
     # i figured out i am leader because client_uuid == my_uuid
     else:  
-        leader_id = my_uuid
-        print(f"Leader is decided to {leader_id}")
+        leader_uuid = my_uuid
+        log(f"Leader is decided to {leader_uuid}.")
         send_message(client_sock, Message(my_uuid, 1))
         done = True
- 
-print(f"leader is {leader_id}")
+
+log(f"Leader is {leader_uuid}")
+log_file.close()

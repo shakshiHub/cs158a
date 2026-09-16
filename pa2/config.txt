@@ -1,0 +1,3 @@
+## file to be used for in-class demo
+127.0.0.1,5000 --> myIP, port I listen on as a server
+127.0.0.1,5001 --> neighborsIP, port I sent info to as a client
