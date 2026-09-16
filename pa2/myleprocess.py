@@ -151,7 +151,7 @@ while not done:
         leader_id = my_uuid
         log(f"Leader is decided to {leader_id}.")
         send_message(client_sock, Message(my_uuid, 1))
-        done = True
 
 log(f"leader is {leader_id}")
+print(f"leader is {leader_id}") # for stdout
 log_file.close()
