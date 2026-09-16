@@ -1,0 +1,8 @@
+UUID: e60c3053-8158-453b-b983-974c781fe0eb
+Sent: uuid=e60c3053-8158-453b-b983-974c781fe0eb, flag=0
+Received: uuid=4ceb470b-3604-42dd-952c-bee9a9881398, flag=0, less, 0
+Ignored: uuid=4ceb470b-3604-42dd-952c-bee9a9881398, flag=0, less, 0
+Received: uuid=e60c3053-8158-453b-b983-974c781fe0eb, flag=0, same, 0
+Leader is decided to e60c3053-8158-453b-b983-974c781fe0eb.
+Sent: uuid=e60c3053-8158-453b-b983-974c781fe0eb, flag=1
+Leader is e60c3053-8158-453b-b983-974c781fe0eb
