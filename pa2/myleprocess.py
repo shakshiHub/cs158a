@@ -13,7 +13,7 @@ log_file = open(log_filename, "w")
 
 
 connections = {}
-leader_uuid = None
+leader_id = None
 done = False
 buffer = ''
 
@@ -35,10 +35,10 @@ def compare_uuid(client_uuid):
         return "same"
 
 def state():
-    if leader_uuid is None:
+    if leader_id is None:
         return "0"
     else:
-        return f"1, leader_uuid={leader_uuid}"
+        return f"1, leader_id={leader_id}"
  
 
 # function to parse the config file (passed as command line argument)
@@ -129,8 +129,8 @@ while not done:
 
     # client flag = 1, leader is decided
     if client_flag == 1:
-        leader_uuid = client_uuid
-        log(f"Leader is decided to {leader_uuid}.")
+        leader_id = client_uuid
+        log(f"Leader is decided to {leader_id}.")
  
         # if leader is not own uuid, send client uuid forward
         if client_uuid != my_uuid:
@@ -148,10 +148,10 @@ while not done:
  
     # i figured out i am leader because client_uuid == my_uuid
     else:  
-        leader_uuid = my_uuid
-        log(f"Leader is decided to {leader_uuid}.")
+        leader_id = my_uuid
+        log(f"Leader is decided to {leader_id}.")
         send_message(client_sock, Message(my_uuid, 1))
         done = True
 
-log(f"Leader is {leader_uuid}")
+log(f"leader is {leader_id}")
 log_file.close()
