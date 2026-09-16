@@ -56,4 +56,20 @@ Then press Enter once everyone in the ring is ready.
 
 ## Execution example
 
-<img width="516" height="149" alt="Screenshot 2026-09-15 at 11 58 06 PM" src="https://github.com/user-attachments/assets/3f987949-f89a-46d4-a5e6-5bbc9f7282eb" />
+Resulting `log1.txt`, `log2.txt`, and `log3.txt` from running local demo on config1.txt, config2.txt, config3.txt
+
+<br>
+
+<img width="516" height="149" alt="Screenshot 2026-09-15 at 11 58 06 PM" src="https://github.com/user-attachments/assets/3f987949-f89a-46d4-a5e6-5bbc9f7282eb" />
+
+<br><br>
+
+<img width="505" height="193" alt="Screenshot 2026-09-16 at 12 01 46 AM" src="https://github.com/user-attachments/assets/70a3e0e4-52e2-46b8-9c4c-b2293b8d1b77" />
+
+<br><br>
+
+<img width="497" height="166" alt="Screenshot 2026-09-16 at 12 01 59 AM" src="https://github.com/user-attachments/assets/4909d597-779a-48d1-8c8c-8e151b5ad7ea" />
+
+<br>
+<br>
+All three processes agree on the same leader, indicating successful completion of program.
