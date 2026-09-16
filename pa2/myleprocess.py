@@ -108,7 +108,7 @@ server_thread.start()
 
 # main thread
 # as start_server thread works in the background, do work
-time.sleep(10)
+input("press Enter when everyone is ready.")
 client_sock = start_client(connect_addr, connect_port)
     
 # sending inital messsage
