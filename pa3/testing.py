@@ -1,3 +1,9 @@
+"""Early UDP discovery prototype from Part 1.
+
+Run the full agent with agent.py. This file only broadcasts peer_request
+and peer_ack messages; it does not exchange file lists or file bytes.
+"""
+
 import socket
 import json
 import uuid
@@ -75,17 +81,23 @@ def connect_to_peer(ip, port):
     return sock
 
 
-udp_port = 54321 # all nodes broadcast to and listen on port 54321
-tcp_port = int(sys.argv[1]) # giving tcp port as cl arg as it can't be shared unlike udp ports
-node_id = str(uuid.uuid4()) # random id for node
+def main():
+    global udp_port, tcp_port, node_id
+    udp_port = 54321 # all nodes broadcast to and listen on port 54321
+    tcp_port = int(sys.argv[1]) # giving tcp port as cl arg as it can't be shared unlike udp ports
+    node_id = str(uuid.uuid4()) # random id for node
 
-# setup
-tcp_sock = create_tcp_listener() # create tcp socket, begin listening on it
-udp_sock = create_udp_socket() # create udp socket
+    # setup
+    tcp_sock = create_tcp_listener() # create tcp socket, begin listening on it
+    udp_sock = create_udp_socket() # create udp socket
 
-# start background thread
-threading.Thread(target=tcp_accept_loop, args=(tcp_sock,), daemon=True).start() # accept new nodes wanting to connect on your tcp socket
+    # start background thread
+    threading.Thread(target=tcp_accept_loop, args=(tcp_sock,), daemon=True).start() # accept new nodes wanting to connect on your tcp socket
 
-# announce myself, listen on udp forever
-send_peer_request(udp_sock)
-udp_listener(udp_sock) # send ACKs to new joiners, handle ACKs sent back to me as a new joiner 
+    # announce myself, listen on udp forever
+    send_peer_request(udp_sock)
+    udp_listener(udp_sock) # send ACKs to new joiners, handle ACKs sent back to me as a new joiner
+
+
+if __name__ == "__main__":
+    main() 

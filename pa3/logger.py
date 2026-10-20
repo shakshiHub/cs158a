@@ -25,11 +25,11 @@ def fmt_addr(addr):
 
 # one timestamped line added to the log file, and printed too if echo is True
 def _write(line, echo=False):
-    # the current time, down to milliseconds
-    stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+    # seconds only: the assignment's sample lines do not include milliseconds
+    stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # the full log line: time, then the message
-    entry = f"{stamp} | {line}"
+    entry = f"{stamp} {line}"
 
     # the lock keeps lines from different threads from mixing together
     with _lock:
@@ -42,11 +42,20 @@ def _write(line, echo=False):
             print(entry, flush=True)
 
 
-# a log line for a message: sent or received, the peer's address, and the message type
+# a log line for a message: direction, type, and the peer address or node id
+# file bytes are never written here
 def log_message(direction, peer_addr, msg_type):
-    _write(f"{direction.upper():<8} | {fmt_addr(peer_addr):<21} | {msg_type}")
+    direction = direction.upper()
+    # "to" for outgoing traffic, "from" for incoming traffic
+    if direction == "SENT":
+        line = f"SENT {msg_type} to {fmt_addr(peer_addr)}"
+    elif direction == "RECEIVED":
+        line = f"RECEIVED {msg_type} from {fmt_addr(peer_addr)}"
+    else:
+        line = f"{direction} {msg_type} {fmt_addr(peer_addr)}"
+    _write(line)
 
 
 # a log line for an event, like a peer being added or removed (printed on screen by default)
 def log_event(text, echo=True):
-    _write(f"{'EVENT':<8} | {'-':<21} | {text}", echo=echo)
+    _write(f"EVENT {text}", echo=echo)

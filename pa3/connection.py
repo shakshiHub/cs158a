@@ -16,13 +16,17 @@ def register_handler(msg_type, func):
 
 
 # a new Peer for this socket, with its own reading thread started
-def start_peer_thread(sock, addr, peer_table, outgoing, on_connect=None):
+def start_peer_thread(sock, addr, peer_table, outgoing, on_connect=None, on_finish=None):
     # the Peer object that wraps the socket
     peer = Peer(sock, addr, outgoing)
 
+    # which table this connection belongs to. two nodes tested in one
+    # process each have their own table, so this cannot be a global.
+    peer.table = peer_table
+
     # the reading thread; daemon=True means it stops when the program exits
     threading.Thread(target=_peer_loop,
-                     args=(peer, peer_table, on_connect),
+                     args=(peer, peer_table, on_connect, on_finish),
                      name=f"peer-{fmt_addr(addr)}",
                      daemon=True).start()
 
@@ -31,7 +35,7 @@ def start_peer_thread(sock, addr, peer_table, outgoing, on_connect=None):
 
 
 # the reading loop for one peer, running until that peer leaves
-def _peer_loop(peer, peer_table, on_connect):
+def _peer_loop(peer, peer_table, on_connect, on_finish=None):
     # whether this peer made it into the table, so cleanup knows to remove it
     in_table = False
 
@@ -42,6 +46,15 @@ def _peer_loop(peer, peer_table, on_connect):
 
         # the first message from the peer
         msg, payload = recv_msg(peer.sock, peer.addr)
+
+        # the dialer may have set a short timeout so a peer that never speaks
+        # does not occupy a connection forever. later reads wait until the peer
+        # sends something or the socket closes.
+        if hasattr(peer.sock, "settimeout"):
+            try:
+                peer.sock.settimeout(None)
+            except OSError:
+                pass
 
         # its "from" field says who the peer is; a missing id means a broken message
         sender = msg.get("from")
@@ -62,13 +75,24 @@ def _peer_loop(peer, peer_table, on_connect):
             msg, payload = recv_msg(peer.sock, peer.addr)
             _dispatch(peer, msg, payload)
 
-    # a broken message from the peer, which ends the connection
+    # a broken message from the peer, which ends this connection only
     except ProtocolError as e:
         log_event(f"protocol error from {fmt_addr(peer.addr)}: {e}; closing connection")
 
-    # the peer closed the connection or it was reset, so the peer is gone
-    except OSError:
-        pass
+    # the OS reports a reset. this is a subclass of ConnectionError, so it
+    # has to be caught first. the node keeps running; only this peer is dropped.
+    except ConnectionResetError:
+        log_event(f"connection reset by {short(peer.node_id)} at {fmt_addr(peer.addr)}",
+                  echo=False)
+
+    # recv_exact raises this when recv() returns b"" (a clean close)
+    except ConnectionError:
+        log_event(f"peer closed the connection: {short(peer.node_id)} at {fmt_addr(peer.addr)}",
+                  echo=False)
+
+    # any other socket failure on this connection
+    except OSError as e:
+        log_event(f"socket error from {fmt_addr(peer.addr)}: {e}", echo=False)
 
     # cleanup that always happens when the loop ends
     finally:
@@ -81,6 +105,13 @@ def _peer_loop(peer, peer_table, on_connect):
             peer.sock.close()
         except OSError:
             pass
+
+        # lets the dialer forget an in-progress connection
+        if on_finish is not None:
+            try:
+                on_finish(peer)
+            except Exception as e:
+                log_event(f"on_finish failed: {e!r}", echo=False)
 
 
 # a message passed to the function registered for its type

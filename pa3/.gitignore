@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+test_log.txt
+demo_nodes/
+*.part
+.DS_Store

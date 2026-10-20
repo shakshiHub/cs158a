@@ -134,7 +134,8 @@ class PeerTable:
         # a log line only when something was really removed
         if removed:
             log_event(f"peer removed: {short(peer.node_id)} at {fmt_addr(peer.addr)}, "
-                      f"its {len(peer.files)} file(s) dropped ({count} peers left)")
+                      f"its {len(peer.files)} file(s) dropped "
+                      f"({count} peer{'s' if count != 1 else ''} left)")
         return removed
 
     # a peer's file list replaced with the newest one
@@ -162,6 +163,14 @@ class PeerTable:
         with self._lock:
             return {nid: {"addr": p.addr, "files": list(p.files)}
                     for nid, p in self._peers.items()}
+
+    # a copy of one peer's advertised names, or None if that peer is gone
+    def files_of(self, node_id):
+        with self._lock:
+            peer = self._peers.get(node_id)
+            if peer is None:
+                return None
+            return list(peer.files)
 
     # the ids of every peer that has this file
     def who_has(self, filename):
