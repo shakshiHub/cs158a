@@ -125,7 +125,7 @@ Failure: no payload. The connection stays open.
 
 ### How file content is encoded
 
-The file is the raw bytes after the JSON header. They are not placed inside the JSON and they are not Base64. The header only names the file and gives `payload_len`.
+The file is the raw bytes after the JSON header. They are not placed inside the JSON and they are not Base64. Raw bytes keep the file the same size, while Base64 would make it larger. The header only names the file and gives `payload_len`.
 
 ## Division of work
 

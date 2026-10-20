@@ -1,0 +1,46 @@
+2026-10-20 01:50:11 EVENT node2 started; TCP 5002; UDP 54321; sharing /Users/vaisp/Downloads/cs158pa3/cs158a/pa3/demo_nodes/node2/shared
+2026-10-20 01:50:11 SENT peer_request to 255.255.255.255:54321
+2026-10-20 01:50:12 RECEIVED peer_ack from node1
+2026-10-20 01:50:12 EVENT outgoing TCP connection to node1 at 10.251.200.16:5001
+2026-10-20 01:50:12 SENT file_list to 10.251.200.16:5001
+2026-10-20 01:50:12 RECEIVED file_list from 10.251.200.16:5001
+2026-10-20 01:50:12 EVENT peer added: node1 at 10.251.200.16:5001 (1 peer)
+2026-10-20 01:50:12 EVENT file list from node1: unique1.txt
+2026-10-20 01:50:12 RECEIVED peer_request from node3
+2026-10-20 01:50:12 SENT peer_ack to 255.255.255.255:54321
+2026-10-20 01:50:12 RECEIVED peer_ack from node1
+2026-10-20 01:50:12 EVENT incoming TCP connection from 10.251.200.16:56855
+2026-10-20 01:50:12 SENT file_list to 10.251.200.16:56855
+2026-10-20 01:50:12 RECEIVED file_list from 10.251.200.16:56855
+2026-10-20 01:50:12 EVENT peer added: node3 at 10.251.200.16:56855 (2 peers)
+2026-10-20 01:50:12 EVENT file list from node3: unique3.txt
+2026-10-20 01:50:12 RECEIVED peer_request from node4
+2026-10-20 01:50:12 SENT peer_ack to 255.255.255.255:54321
+2026-10-20 01:50:12 RECEIVED peer_ack from node3
+2026-10-20 01:50:12 RECEIVED peer_ack from node1
+2026-10-20 01:50:12 EVENT incoming TCP connection from 10.251.200.16:56859
+2026-10-20 01:50:12 SENT file_list to 10.251.200.16:56859
+2026-10-20 01:50:12 RECEIVED file_list from 10.251.200.16:56859
+2026-10-20 01:50:12 EVENT peer added: node4 at 10.251.200.16:56859 (3 peers)
+2026-10-20 01:50:12 EVENT file list from node4: unique4.txt
+2026-10-20 01:50:12 RECEIVED peer_request from node5
+2026-10-20 01:50:12 SENT peer_ack to 255.255.255.255:54321
+2026-10-20 01:50:12 RECEIVED peer_ack from node4
+2026-10-20 01:50:12 RECEIVED peer_ack from node1
+2026-10-20 01:50:12 RECEIVED peer_ack from node3
+2026-10-20 01:50:12 EVENT incoming TCP connection from 10.251.200.16:56862
+2026-10-20 01:50:12 SENT file_list to 10.251.200.16:56862
+2026-10-20 01:50:12 RECEIVED file_list from 10.251.200.16:56862
+2026-10-20 01:50:12 EVENT peer added: node5 at 10.251.200.16:56862 (4 peers)
+2026-10-20 01:50:12 EVENT file list from node5: unique5.txt
+2026-10-20 01:50:12 RECEIVED file_list from 10.251.200.16:5001
+2026-10-20 01:50:12 EVENT file list from node1: unique1.txt, unique5.txt
+2026-10-20 01:50:13 EVENT peer closed the connection: node4 at 10.251.200.16:56859
+2026-10-20 01:50:13 EVENT peer removed: node4 at 10.251.200.16:56859, its 1 file(s) dropped (3 peers left)
+2026-10-20 01:50:14 EVENT peer closed the connection: node1 at 10.251.200.16:5001
+2026-10-20 01:50:14 EVENT peer removed: node1 at 10.251.200.16:5001, its 2 file(s) dropped (2 peers left)
+2026-10-20 01:50:14 EVENT node2 shutting down
+2026-10-20 01:50:14 EVENT peer closed the connection: node3 at 10.251.200.16:56855
+2026-10-20 01:50:14 EVENT peer removed: node3 at 10.251.200.16:56855, its 1 file(s) dropped (1 peer left)
+2026-10-20 01:50:14 EVENT peer closed the connection: node5 at 10.251.200.16:56862
+2026-10-20 01:50:14 EVENT peer removed: node5 at 10.251.200.16:56862, its 1 file(s) dropped (0 peers left)
